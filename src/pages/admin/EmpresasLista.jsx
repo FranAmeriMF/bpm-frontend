@@ -4,10 +4,9 @@ import { toast } from 'react-toastify';
 import {
   useGetEmpresasQuery,
   useChangeStatusEmpresaMutation,
-  useDeleteEmpresaMutation,
 } from '@api/empresasApi';
 import { Button, Spinner } from '@components/atoms';
-import { SearchBar, Pagination, ConfirmDialog } from '@components/molecules';
+import { SearchBar, Pagination } from '@components/molecules';
 import { cn } from '@utils/helpers';
 
 const LIMIT = 20;
@@ -28,7 +27,6 @@ const EmpresasLista = () => {
   const [search, setSearch]         = useState('');
   const [estado, setEstado]         = useState('');
   const [page, setPage]             = useState(1);
-  const [toDelete, setToDelete]     = useState(null);
 
   const { data, isLoading } = useGetEmpresasQuery({
     ...(search && { buscar: search }),
@@ -37,7 +35,6 @@ const EmpresasLista = () => {
     limit: LIMIT,
   });
   const [changeStatus, { isLoading: toggling }] = useChangeStatusEmpresaMutation();
-  const [deleteEmpresa, { isLoading: deleting }] = useDeleteEmpresaMutation();
 
   const empresas   = data?.data ?? [];
   const total      = data?.total ?? 0;
@@ -50,17 +47,6 @@ const EmpresasLista = () => {
       toast.success(`Empresa ${next === 'activa' ? 'activada' : 'desactivada'}`);
     } catch (err) {
       toast.error(err.data?.message ?? 'Error al cambiar estado');
-    }
-  };
-
-  const handleDelete = async () => {
-    try {
-      await deleteEmpresa(toDelete.id).unwrap();
-      toast.success('Empresa eliminada');
-      setToDelete(null);
-    } catch (err) {
-      toast.error(err.data?.message ?? 'No se pudo eliminar');
-      setToDelete(null);
     }
   };
 
@@ -156,13 +142,6 @@ const EmpresasLista = () => {
                           >
                             {e.estado === 'activa' ? 'Desactivar' : 'Activar'}
                           </Button>
-                          <Button
-                            size="sm"
-                            variant="error"
-                            onClick={() => setToDelete(e)}
-                          >
-                            Eliminar
-                          </Button>
                         </div>
                       </td>
                     </tr>
@@ -180,15 +159,6 @@ const EmpresasLista = () => {
         </>
       )}
 
-      <ConfirmDialog
-        isOpen={!!toDelete}
-        onClose={() => setToDelete(null)}
-        onConfirm={handleDelete}
-        isLoading={deleting}
-        title="Eliminar empresa"
-        message={`¿Eliminás "${toDelete?.razon_social}"? Esta acción no se puede deshacer.`}
-        variant="danger"
-      />
     </div>
   );
 };

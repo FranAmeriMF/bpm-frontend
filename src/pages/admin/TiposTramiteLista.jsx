@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import {
   useGetTiposTramiteQuery,
-  useDeleteTipoTramiteMutation,
   useActivarTipoTramiteMutation,
   useNuevaVersionTipoTramiteMutation,
 } from '@api/tiposTramiteApi';
@@ -36,7 +35,6 @@ const TiposTramiteLista = () => {
   const [search, setSearch]     = useState('');
   const [estado, setEstado]     = useState('');
   const [page, setPage]         = useState(1);
-  const [toDelete, setToDelete] = useState(null);
   const [toActivar, setToActivar] = useState(null);
 
   const { data, isLoading } = useGetTiposTramiteQuery({
@@ -46,7 +44,6 @@ const TiposTramiteLista = () => {
     limit: LIMIT,
   });
 
-  const [deleteTipo,   { isLoading: deleting }]   = useDeleteTipoTramiteMutation();
   const [activarTipo,  { isLoading: activando }]  = useActivarTipoTramiteMutation();
   const [nuevaVersion, { isLoading: versionando }] = useNuevaVersionTipoTramiteMutation();
 
@@ -64,17 +61,6 @@ const TiposTramiteLista = () => {
     } catch (err) {
       toast.error(err.data?.message ?? 'Error al activar — verificá que tenga al menos una sección');
       setToActivar(null);
-    }
-  };
-
-  const handleDelete = async () => {
-    try {
-      await deleteTipo(toDelete.id).unwrap();
-      toast.success('Tipo de trámite eliminado');
-      setToDelete(null);
-    } catch (err) {
-      toast.error(err.data?.message ?? 'No se pudo eliminar');
-      setToDelete(null);
     }
   };
 
@@ -195,11 +181,6 @@ const TiposTramiteLista = () => {
                             Nueva versión
                           </Button>
                         )}
-                        {t.estado === 'borrador' && (
-                          <Button size="sm" variant="error" onClick={() => setToDelete(t)}>
-                            Eliminar
-                          </Button>
-                        )}
                       </div>
                     </td>
                   </tr>
@@ -219,15 +200,6 @@ const TiposTramiteLista = () => {
         title="Activar tipo de trámite"
         message={toActivar ? `¿Activar "${toActivar.nombre}"? Los solicitantes podrán usarlo para crear trámites.` : ''}
         variant="default"
-      />
-      <ConfirmDialog
-        isOpen={!!toDelete}
-        onClose={() => setToDelete(null)}
-        onConfirm={handleDelete}
-        isLoading={deleting}
-        title="Eliminar tipo de trámite"
-        message={`¿Eliminás "${toDelete?.nombre}"? Esta acción no se puede deshacer.`}
-        variant="danger"
       />
     </div>
   );

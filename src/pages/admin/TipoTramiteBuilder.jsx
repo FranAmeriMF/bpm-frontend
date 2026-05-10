@@ -6,7 +6,7 @@ import * as yup from 'yup';
 import { Dialog, Transition } from '@headlessui/react';
 import { toast } from 'react-toastify';
 import {
-  ChevronUpIcon, ChevronDownIcon, PencilIcon, TrashIcon, PlusIcon,
+  ChevronUpIcon, ChevronDownIcon, PencilIcon, PlusIcon,
 } from '@heroicons/react/24/outline';
 import {
   useGetTipoTramiteQuery,
@@ -16,16 +16,13 @@ import {
   useSetModoAsignacionMutation,
   useCreateSeccionMutation,
   useUpdateSeccionMutation,
-  useDeleteSeccionMutation,
   useReorderSeccionesMutation,
   useCreateCampoMutation,
   useUpdateCampoMutation,
-  useDeleteCampoMutation,
   useReorderCamposMutation,
 } from '@api/tiposTramiteApi';
 import { useGetOficinasQuery } from '@api/oficinasApi';
 import { Button, Card, Input, Spinner } from '@components/atoms';
-import { ConfirmDialog } from '@components/molecules';
 import { cn } from '@utils/helpers';
 
 // ── Constants ────────────────────────────────────────────────────────────────
@@ -407,20 +404,16 @@ const TipoTramiteBuilder = () => {
 
   const [createSeccion, { isLoading: creandoSec }]    = useCreateSeccionMutation();
   const [updateSeccion, { isLoading: actualizandoSec }] = useUpdateSeccionMutation();
-  const [deleteSeccion, { isLoading: eliminandoSec }] = useDeleteSeccionMutation();
   const [reorderSecciones] = useReorderSeccionesMutation();
 
   const [createCampo, { isLoading: creandoCampo }]     = useCreateCampoMutation();
   const [updateCampo, { isLoading: actualizandoCampo }] = useUpdateCampoMutation();
-  const [deleteCampo, { isLoading: eliminandoCampo }]  = useDeleteCampoMutation();
   const [reorderCampos] = useReorderCamposMutation();
 
   // ── Modal state ──────────────────────────────────────────────────────────
   const [metaModal,        setMetaModal]        = useState(false);
   const [seccionModal,     setSeccionModal]     = useState(null); // null | { seccion? }
   const [campoModal,       setCampoModal]       = useState(null); // null | { seccionId, campo? }
-  const [toDeleteSeccion,  setToDeleteSeccion]  = useState(null);
-  const [toDeleteCampo,    setToDeleteCampo]    = useState(null); // null | { campo, seccionId }
 
   // ── Asignación local state ───────────────────────────────────────────────
   const [modoAsig, setModoAsig]           = useState('manual');
@@ -512,17 +505,6 @@ const TipoTramiteBuilder = () => {
     } catch (err) { toast.error(err.data?.message ?? 'Error al guardar sección'); }
   };
 
-  const handleDeleteSeccion = async () => {
-    try {
-      await deleteSeccion({ tipoId: id, seccionId: toDeleteSeccion.id }).unwrap();
-      toast.success('Sección eliminada');
-      setToDeleteSeccion(null);
-    } catch (err) {
-      toast.error(err.data?.message ?? 'No se pudo eliminar');
-      setToDeleteSeccion(null);
-    }
-  };
-
   const handleSaveCampo = async (payload) => {
     try {
       if (campoModal?.campo) {
@@ -534,17 +516,6 @@ const TipoTramiteBuilder = () => {
       }
       setCampoModal(null);
     } catch (err) { toast.error(err.data?.message ?? 'Error al guardar campo'); }
-  };
-
-  const handleDeleteCampo = async () => {
-    try {
-      await deleteCampo({ tipoId: id, seccionId: toDeleteCampo.seccionId, campoId: toDeleteCampo.campo.id }).unwrap();
-      toast.success('Campo eliminado');
-      setToDeleteCampo(null);
-    } catch (err) {
-      toast.error(err.data?.message ?? 'No se pudo eliminar');
-      setToDeleteCampo(null);
-    }
   };
 
   // ── Render ────────────────────────────────────────────────────────────────
@@ -708,13 +679,6 @@ const TipoTramiteBuilder = () => {
                         >
                           <PencilIcon className="h-4 w-4 text-on-surface-variant" />
                         </button>
-                        <button
-                          onClick={() => setToDeleteSeccion(sec)}
-                          className="p-1.5 rounded hover:bg-error-container transition-colors"
-                          title="Eliminar"
-                        >
-                          <TrashIcon className="h-4 w-4 text-error" />
-                        </button>
                       </div>
                     )}
                   </div>
@@ -770,12 +734,6 @@ const TipoTramiteBuilder = () => {
                               >
                                 <PencilIcon className="h-3.5 w-3.5 text-on-surface-variant" />
                               </button>
-                              <button
-                                onClick={() => setToDeleteCampo({ campo, seccionId: sec.id })}
-                                className="p-1 rounded hover:bg-error-container transition-colors"
-                              >
-                                <TrashIcon className="h-3.5 w-3.5 text-error" />
-                              </button>
                             </div>
                           )}
                         </div>
@@ -823,24 +781,6 @@ const TipoTramiteBuilder = () => {
         onClose={() => setCampoModal(null)}
         onSave={handleSaveCampo}
         isSaving={creandoCampo || actualizandoCampo}
-      />
-      <ConfirmDialog
-        isOpen={!!toDeleteSeccion}
-        onClose={() => setToDeleteSeccion(null)}
-        onConfirm={handleDeleteSeccion}
-        isLoading={eliminandoSec}
-        title="Eliminar sección"
-        message={`¿Eliminás "${toDeleteSeccion?.titulo}" y todos sus campos?`}
-        variant="danger"
-      />
-      <ConfirmDialog
-        isOpen={!!toDeleteCampo}
-        onClose={() => setToDeleteCampo(null)}
-        onConfirm={handleDeleteCampo}
-        isLoading={eliminandoCampo}
-        title="Eliminar campo"
-        message={`¿Eliminás el campo "${toDeleteCampo?.campo.etiqueta}"?`}
-        variant="danger"
       />
     </div>
   );

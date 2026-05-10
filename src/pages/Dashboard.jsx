@@ -143,7 +143,7 @@ const RecentTramites = ({ tramites, isLoading }) => (
               <div className="flex items-center gap-3 ml-4 shrink-0">
                 <StatusPill status={t.estado} />
                 <span className="text-label-sm text-on-surface-variant hidden sm:block">
-                  {t.fecha_creacion ? formatDate(t.fecha_creacion, 'dd/MM/yy') : ''}
+                  {t.fecha_creacion ? formatDate(t.fecha_creacion, 'dd/MM/yyyy') : ''}
                 </span>
               </div>
             </Link>

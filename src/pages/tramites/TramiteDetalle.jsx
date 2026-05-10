@@ -287,7 +287,7 @@ const TramiteDetalle = () => {
             {
               label: 'Creado',
               value: tramite.fecha_creacion
-                ? formatDate(tramite.fecha_creacion, "dd 'de' MMMM yyyy")
+                ? formatDate(tramite.fecha_creacion, 'dd/MM/yyyy')
                 : '—',
             },
             {

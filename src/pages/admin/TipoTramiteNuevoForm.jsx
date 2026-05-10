@@ -31,7 +31,7 @@ const TipoTramiteNuevoForm = () => {
   };
 
   return (
-    <div className="space-y-6 max-w-2xl">
+    <div className="space-y-6">
       <div>
         <Link to="/tipos-tramite" className="text-label-sm text-on-surface-variant hover:underline">
           ← Tipos de Trámite

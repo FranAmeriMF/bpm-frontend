@@ -198,7 +198,7 @@ const Perfil = () => {
     : '?';
 
   return (
-    <div className="space-y-6 max-w-2xl">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center gap-4">
         <div className="h-14 w-14 rounded-full bg-primary text-on-primary flex items-center justify-center flex-shrink-0">

@@ -4,7 +4,6 @@ import { toast } from 'react-toastify';
 import {
   useGetUsuariosQuery,
   useChangeStatusUsuarioMutation,
-  useDeleteUsuarioMutation,
 } from '@api/usuariosApi';
 import { Button, Spinner } from '@components/atoms';
 import { SearchBar, Pagination, ConfirmDialog } from '@components/molecules';
@@ -46,7 +45,6 @@ const UsuariosLista = () => {
   const [rol, setRol]             = useState('');
   const [estado, setEstado]       = useState('');
   const [page, setPage]           = useState(1);
-  const [toDelete, setToDelete]   = useState(null);
   const [statusTarget, setStatusTarget] = useState(null); // { user, nextEstado }
 
   const { data, isLoading } = useGetUsuariosQuery({
@@ -58,7 +56,6 @@ const UsuariosLista = () => {
     limit: LIMIT,
   });
   const [changeStatus, { isLoading: changingStatus }] = useChangeStatusUsuarioMutation();
-  const [deleteUsuario, { isLoading: deleting }]       = useDeleteUsuarioMutation();
 
   const usuarios   = data?.data ?? [];
   const total      = data?.total ?? 0;
@@ -74,17 +71,6 @@ const UsuariosLista = () => {
     } catch (err) {
       toast.error(err.data?.message ?? 'Error al cambiar estado');
       setStatusTarget(null);
-    }
-  };
-
-  const handleDelete = async () => {
-    try {
-      await deleteUsuario(toDelete.id).unwrap();
-      toast.success('Usuario eliminado');
-      setToDelete(null);
-    } catch (err) {
-      toast.error(err.data?.message ?? 'No se pudo eliminar');
-      setToDelete(null);
     }
   };
 
@@ -182,7 +168,7 @@ const UsuariosLista = () => {
                       <p className="text-label-sm font-mono">{u.dni}</p>
                     </td>
                     <td className="px-4 py-3">
-                      <span className="inline-flex px-2.5 py-1 rounded bg-primary-fixed text-on-primary-container text-label-sm font-medium">
+                      <span className="inline-flex px-2.5 py-1 rounded bg-surface-container-high text-on-surface text-label-sm font-medium">
                         {ROL_LABELS[u.rol] ?? u.rol}
                       </span>
                     </td>
@@ -193,7 +179,7 @@ const UsuariosLista = () => {
                       <EstadoBadge estado={u.estado} />
                     </td>
                     <td className="px-4 py-3 text-on-surface-variant text-label-sm hidden lg:table-cell">
-                      {u.ultimo_acceso ? formatDate(u.ultimo_acceso, 'dd/MM/yy HH:mm') : 'Nunca'}
+                      {u.ultimo_acceso ? formatDate(u.ultimo_acceso, 'dd/MM/yyyy HH:mm') : 'Nunca'}
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-end gap-2 flex-wrap">
@@ -206,9 +192,6 @@ const UsuariosLista = () => {
                           onClick={() => setStatusTarget({ user: u, nextEstado: nextStatus(u.estado) })}
                         >
                           {nextStatusLabel(u.estado)}
-                        </Button>
-                        <Button size="sm" variant="error" onClick={() => setToDelete(u)}>
-                          Eliminar
                         </Button>
                       </div>
                     </td>
@@ -242,16 +225,6 @@ const UsuariosLista = () => {
         variant={statusTarget?.nextEstado === 'inactivo' ? 'danger' : 'default'}
       />
 
-      {/* Confirm delete */}
-      <ConfirmDialog
-        isOpen={!!toDelete}
-        onClose={() => setToDelete(null)}
-        onConfirm={handleDelete}
-        isLoading={deleting}
-        title="Eliminar usuario"
-        message={`¿Eliminás a ${toDelete?.nombre} ${toDelete?.apellido}? Esta acción no se puede deshacer.`}
-        variant="danger"
-      />
     </div>
   );
 };

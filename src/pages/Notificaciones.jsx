@@ -5,14 +5,12 @@ import {
   ExclamationTriangleIcon,
   InformationCircleIcon,
   XCircleIcon,
-  TrashIcon,
   CheckIcon,
 } from '@heroicons/react/24/outline';
 import {
   useGetNotificacionesQuery,
   useMarcarLeidaMutation,
   useMarcarTodasLeidasMutation,
-  useDeleteNotificacionMutation,
 } from '@api/notificacionesApi';
 import { Button, Card, Spinner } from '@components/atoms';
 import { cn, formatDate } from '@utils/helpers';
@@ -35,7 +33,7 @@ const FILTROS_LECTURA = [
 const leidaParam = { todas: undefined, no_leidas: false, leidas: true };
 
 // ── Card de una notificación ───────────────────────────────────────────────────
-const NotificacionCard = ({ notif, onMarcarLeida, onEliminar }) => {
+const NotificacionCard = ({ notif, onMarcarLeida }) => {
   const cfg = TIPO_CONFIG[notif.tipo] ?? TIPO_CONFIG.info;
   const { Icon } = cfg;
 
@@ -113,13 +111,6 @@ const NotificacionCard = ({ notif, onMarcarLeida, onEliminar }) => {
                 Marcar como leída
               </button>
             )}
-            <button
-              onClick={() => onEliminar(notif.id)}
-              className="flex items-center gap-1 text-label-sm text-error/70 hover:text-error transition-colors ml-auto"
-            >
-              <TrashIcon className="w-3.5 h-3.5" />
-              Eliminar
-            </button>
           </div>
         </div>
       </div>
@@ -145,7 +136,6 @@ const Notificaciones = () => {
 
   const [marcarLeida] = useMarcarLeidaMutation();
   const [marcarTodas] = useMarcarTodasLeidasMutation();
-  const [eliminar]    = useDeleteNotificacionMutation();
 
   const lista      = data?.data ?? [];
   const total      = data?.total ?? 0;
@@ -249,7 +239,6 @@ const Notificaciones = () => {
               key={n.id}
               notif={n}
               onMarcarLeida={(id) => marcarLeida(id)}
-              onEliminar={(id) => eliminar(id)}
             />
           ))}
         </div>

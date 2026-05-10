@@ -1,14 +1,11 @@
-import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useAuth } from '@hooks/useAuth';
 import {
   useGetOficinasEmpresaQuery,
   useUpdateOficinaEmpresaMutation,
-  useDeleteOficinaEmpresaMutation,
 } from '@api/oficinasEmpresaApi';
 import { Button, Spinner } from '@components/atoms';
-import { ConfirmDialog } from '@components/molecules';
 import { cn } from '@utils/helpers';
 
 const EstadoBadge = ({ estado }) => (
@@ -27,14 +24,11 @@ const OficinasEmpresaLista = () => {
   const { user } = useAuth();
   const empresaId = user?.empresa_id;
 
-  const [toDelete, setToDelete] = useState(null);
-
   const { data: oficinas = [], isLoading } = useGetOficinasEmpresaQuery(empresaId, {
     skip: !empresaId,
   });
 
   const [updateOficina, { isLoading: toggling }] = useUpdateOficinaEmpresaMutation();
-  const [deleteOficina, { isLoading: deleting }] = useDeleteOficinaEmpresaMutation();
 
   const handleToggle = async (of) => {
     const next = of.estado === 'activa' ? 'inactiva' : 'activa';
@@ -43,17 +37,6 @@ const OficinasEmpresaLista = () => {
       toast.success(`Oficina ${next === 'activa' ? 'activada' : 'desactivada'}`);
     } catch (err) {
       toast.error(err.data?.message ?? 'Error al cambiar estado');
-    }
-  };
-
-  const handleDelete = async () => {
-    try {
-      await deleteOficina({ empresa_id: empresaId, id: toDelete.id }).unwrap();
-      toast.success('Oficina eliminada');
-      setToDelete(null);
-    } catch (err) {
-      toast.error(err.data?.message ?? 'No se pudo eliminar');
-      setToDelete(null);
     }
   };
 
@@ -136,13 +119,6 @@ const OficinasEmpresaLista = () => {
                       >
                         {of.estado === 'activa' ? 'Desactivar' : 'Activar'}
                       </Button>
-                      <Button
-                        size="sm"
-                        variant="error"
-                        onClick={() => setToDelete(of)}
-                      >
-                        Eliminar
-                      </Button>
                     </div>
                   </td>
                 </tr>
@@ -152,15 +128,6 @@ const OficinasEmpresaLista = () => {
         </div>
       )}
 
-      <ConfirmDialog
-        isOpen={!!toDelete}
-        onClose={() => setToDelete(null)}
-        onConfirm={handleDelete}
-        isLoading={deleting}
-        title="Eliminar oficina"
-        message={`¿Eliminás "${toDelete?.nombre}"? Esta acción no se puede deshacer.`}
-        variant="danger"
-      />
     </div>
   );
 };

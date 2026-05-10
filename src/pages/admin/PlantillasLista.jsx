@@ -3,12 +3,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import {
   useGetPlantillasQuery,
-  useDeletePlantillaMutation,
   useUpdatePlantillaMutation,
 } from '@api/plantillasApi';
 import { useGetOficinasQuery } from '@api/oficinasApi';
 import { Button, Spinner } from '@components/atoms';
-import { SearchBar, Pagination, ConfirmDialog } from '@components/molecules';
+import { SearchBar, Pagination } from '@components/molecules';
 import { cn } from '@utils/helpers';
 
 const LIMIT = 20;
@@ -57,7 +56,6 @@ const PlantillasLista = () => {
   const [tipo, setTipo]         = useState('');
   const [estado, setEstado]     = useState('');
   const [page, setPage]         = useState(1);
-  const [toDelete, setToDelete] = useState(null);
 
   const { data, isLoading } = useGetPlantillasQuery({
     ...(search  && { buscar: search }),
@@ -70,7 +68,6 @@ const PlantillasLista = () => {
   const { data: oficinasData } = useGetOficinasQuery({ limit: 100 });
   const oficinas = oficinasData?.data ?? [];
 
-  const [deletePlantilla, { isLoading: deleting }]   = useDeletePlantillaMutation();
   const [updatePlantilla, { isLoading: toggling }]   = useUpdatePlantillaMutation();
 
   const plantillas  = data?.data       ?? [];
@@ -86,17 +83,6 @@ const PlantillasLista = () => {
       toast.success(`Plantilla ${next}`);
     } catch (err) {
       toast.error(err.data?.message ?? 'Error al cambiar estado');
-    }
-  };
-
-  const handleDelete = async () => {
-    try {
-      await deletePlantilla(toDelete.id).unwrap();
-      toast.success('Plantilla eliminada');
-      setToDelete(null);
-    } catch (err) {
-      toast.error(err.data?.message ?? 'No se pudo eliminar');
-      setToDelete(null);
     }
   };
 
@@ -217,13 +203,6 @@ const PlantillasLista = () => {
                         >
                           {p.estado === 'activa' ? 'Desactivar' : 'Activar'}
                         </Button>
-                        <Button
-                          size="sm"
-                          variant="error"
-                          onClick={() => setToDelete(p)}
-                        >
-                          Eliminar
-                        </Button>
                       </div>
                     </td>
                   </tr>
@@ -235,15 +214,6 @@ const PlantillasLista = () => {
         </>
       )}
 
-      <ConfirmDialog
-        isOpen={!!toDelete}
-        onClose={() => setToDelete(null)}
-        onConfirm={handleDelete}
-        isLoading={deleting}
-        title="Eliminar plantilla"
-        message={`¿Eliminás la plantilla "${toDelete?.nombre}"? Esta acción no se puede deshacer.`}
-        variant="danger"
-      />
     </div>
   );
 };

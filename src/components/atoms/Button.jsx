@@ -1,10 +1,11 @@
 import { forwardRef } from 'react';
+import PropTypes from 'prop-types';
 import { cn } from '@utils/helpers';
 import Spinner from './Spinner';
 
 const variants = {
   primary:
-    'bg-gradient-to-br from-primary to-primary-container text-on-primary shadow-ambient hover:shadow-ambient-lg dark:bg-none dark:bg-primary',
+    'bg-gradient-to-br from-primary to-primary-container text-on-primary shadow-ambient hover:shadow-ambient-lg dark:to-primary',
   secondary:
     'bg-surface-container-highest text-primary hover:bg-surface-container-high',
   tertiary:
@@ -43,5 +44,14 @@ const Button = forwardRef(
 );
 
 Button.displayName = 'Button';
+
+Button.propTypes = {
+  children:  PropTypes.node,
+  variant:   PropTypes.oneOf(['primary', 'secondary', 'tertiary', 'error']),
+  size:      PropTypes.oneOf(['sm', 'md', 'lg']),
+  className: PropTypes.string,
+  disabled:  PropTypes.bool,
+  isLoading: PropTypes.bool,
+};
 
 export default Button;

@@ -7,7 +7,7 @@ export function cn(...inputs) {
   return twMerge(clsx(inputs));
 }
 
-export const formatDate = (date, pattern = "d 'de' MMMM, yyyy") => {
+export const formatDate = (date, pattern = 'dd/MM/yyyy') => {
   if (!date) return '—';
   try {
     const d = typeof date === 'string' ? parseISO(date) : date;
@@ -17,7 +17,7 @@ export const formatDate = (date, pattern = "d 'de' MMMM, yyyy") => {
   }
 };
 
-export const formatDateTime = (date) => formatDate(date, "d MMM yyyy, HH:mm");
+export const formatDateTime = (date) => formatDate(date, 'dd/MM/yyyy HH:mm');
 
 export const formatCurrency = (amount) => {
   if (amount == null) return '—';

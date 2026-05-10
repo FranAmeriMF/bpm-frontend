@@ -102,7 +102,7 @@ const UsuarioForm = () => {
   }
 
   return (
-    <div className="space-y-6 max-w-2xl">
+    <div className="space-y-6 ">
       <div>
         <Link to="/usuarios" className="text-label-sm text-on-surface-variant hover:underline">
           ← Usuarios Internos
