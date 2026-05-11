@@ -124,16 +124,28 @@ const BandejaAsignacion = () => {
                     key={t.id}
                     className="bg-surface hover:bg-surface-container-low transition-colors"
                   >
-                    <td className="px-4 py-3 font-mono text-label-md text-primary">{t.numero}</td>
+                    <td className="px-4 py-3">
+                      <Link
+                        to={`/tramites/${t.id}`}
+                        className="font-mono text-label-md text-primary hover:underline"
+                      >
+                        {t.numero}
+                      </Link>
+                    </td>
                     <td className="px-4 py-3 text-on-surface">{t.tipo_tramite?.nombre}</td>
                     <td className="px-4 py-3 text-on-surface-variant">{t.empresa?.razon_social}</td>
                     <td className="px-4 py-3 text-on-surface-variant">
                       {t.fecha_creacion ? formatDate(t.fecha_creacion, 'dd/MM/yyyy') : '—'}
                     </td>
                     <td className="px-4 py-3 text-right">
-                      <Link to={`/moderador/asignar/${t.id}`}>
-                        <Button size="sm">Asignar</Button>
-                      </Link>
+                      <div className="flex items-center justify-end gap-2">
+                        <Link to={`/tramites/${t.id}`}>
+                          <Button size="sm" variant="secondary">Ver</Button>
+                        </Link>
+                        <Link to={`/moderador/asignar/${t.id}`}>
+                          <Button size="sm">Asignar</Button>
+                        </Link>
+                      </div>
                     </td>
                   </tr>
                 ))}

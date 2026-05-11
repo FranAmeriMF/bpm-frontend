@@ -59,6 +59,8 @@ export default {
           DEFAULT: 'rgb(var(--color-outline) / <alpha-value>)',
           variant: 'rgb(var(--color-outline-v) / <alpha-value>)',
         },
+        success: 'rgb(var(--color-success) / <alpha-value>)',
+        caution: 'rgb(var(--color-caution) / <alpha-value>)',
         shadow: 'rgb(var(--color-shadow) / <alpha-value>)',
         'surface-tint': 'rgb(var(--color-surface-tint-sa) / <alpha-value>)',
         'inverse-surface': 'rgb(var(--color-inverse-surface) / <alpha-value>)',

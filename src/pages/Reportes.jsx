@@ -231,10 +231,10 @@ const SeccionOficinas = () => {
                       <td className="px-4 py-3 text-on-surface font-medium">{o.nombre}</td>
                       <td className="px-4 py-3 text-center text-on-surface-variant">{o.total_asignaciones}</td>
                       <td className="px-4 py-3 text-center">
-                        <span className="text-green-600 dark:text-green-400 font-medium">{o.completadas}</span>
+                        <span className="text-success font-medium">{o.completadas}</span>
                       </td>
                       <td className="px-4 py-3 text-center">
-                        <span className={o.pendientes > 0 ? 'text-amber-600 dark:text-amber-400 font-medium' : 'text-on-surface-variant'}>
+                        <span className={o.pendientes > 0 ? 'text-caution font-medium' : 'text-on-surface-variant'}>
                           {o.pendientes}
                         </span>
                       </td>
@@ -245,7 +245,7 @@ const SeccionOficinas = () => {
                         <div className="flex items-center justify-center gap-2">
                           <div className="w-16 h-1.5 bg-surface-container-high rounded-full overflow-hidden">
                             <div
-                              className="h-full bg-green-500 rounded-full"
+                              className="h-full bg-success rounded-full"
                               style={{ width: `${tasa}%` }}
                             />
                           </div>
@@ -269,10 +269,10 @@ const SeccionDecisor = () => {
   const { data, isLoading } = useGetDesempenoDecisorQuery();
 
   const items = [
-    { label: 'Total decisiones', value: data?.total,       color: 'text-primary' },
-    { label: 'Aprobados',        value: data?.aprobados,   color: 'text-green-600 dark:text-green-400' },
-    { label: 'Observados',       value: data?.observados,  color: 'text-amber-500' },
-    { label: 'Rechazados',       value: data?.rechazados,  color: 'text-red-600 dark:text-red-400' },
+    { label: 'Total decisiones', value: data?.total,      color: 'text-primary' },
+    { label: 'Aprobados',        value: data?.aprobados,  color: 'text-success' },
+    { label: 'Observados',       value: data?.observados, color: 'text-caution' },
+    { label: 'Rechazados',       value: data?.rechazados, color: 'text-error' },
   ];
 
   return (
@@ -299,21 +299,21 @@ const SeccionDecisor = () => {
           <div className="p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-title-md text-on-surface font-medium">Tasa de aprobación</h3>
-              <span className="text-display-sm text-green-600 dark:text-green-400 font-semibold">
+              <span className="text-display-sm text-success font-semibold">
                 {data.tasa_aprobacion}
               </span>
             </div>
             <div className="h-3 bg-surface-container-high rounded-full overflow-hidden">
               <div
-                className="h-full bg-green-500 rounded-full transition-all duration-700"
+                className="h-full bg-success rounded-full transition-all duration-700"
                 style={{ width: data.tasa_aprobacion }}
               />
             </div>
             <div className="flex gap-6 mt-4 flex-wrap">
               {[
-                { label: 'Aprobados', pct: data.total ? Math.round((data.aprobados / data.total) * 100) : 0, color: 'bg-green-500' },
-                { label: 'Observados', pct: data.total ? Math.round((data.observados / data.total) * 100) : 0, color: 'bg-amber-500' },
-                { label: 'Rechazados', pct: data.total ? Math.round((data.rechazados / data.total) * 100) : 0, color: 'bg-red-500' },
+                { label: 'Aprobados',  pct: data.total ? Math.round((data.aprobados  / data.total) * 100) : 0, color: 'bg-success' },
+                { label: 'Observados', pct: data.total ? Math.round((data.observados / data.total) * 100) : 0, color: 'bg-caution' },
+                { label: 'Rechazados', pct: data.total ? Math.round((data.rechazados / data.total) * 100) : 0, color: 'bg-error'   },
               ].map((b) => (
                 <div key={b.label} className="flex items-center gap-2">
                   <span className={`w-2.5 h-2.5 rounded-full ${b.color} shrink-0`} />
