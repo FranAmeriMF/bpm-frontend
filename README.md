@@ -1,4 +1,4 @@
-# Frontend — Sistema de Trámites Municipales
+# Frontend — Sistema de Trámites
 
 Aplicación SPA construida con React + Vite que consume la API REST del backend NestJS.
 

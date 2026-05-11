@@ -23,6 +23,22 @@ const CampoValue = ({ valor }) => {
   return <span>{String(valor)}</span>;
 };
 
+// ── Estado de asignación por oficina ─────────────────────────────────────────
+const ASIGNACION_ESTADO = {
+  pendiente:   { label: 'Pendiente',   cls: 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300' },
+  en_revision: { label: 'En revisión', cls: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300' },
+  completada:  { label: 'Completada',  cls: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' },
+};
+
+const AsignacionBadge = ({ estado }) => {
+  const cfg = ASIGNACION_ESTADO[estado] ?? ASIGNACION_ESTADO.pendiente;
+  return (
+    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-label-sm font-medium ${cfg.cls}`}>
+      {cfg.label}
+    </span>
+  );
+};
+
 // ── Decisión final ────────────────────────────────────────────────────────────
 const DECISION_CONFIG = {
   aprobado:  { label: 'Aprobado',  bg: 'bg-green-50 dark:bg-green-950/30',  border: 'border-green-500',  badge: 'bg-green-600 text-white' },
@@ -173,6 +189,53 @@ const TramiteDetalle = () => {
 
   const historial = tramite.historial ?? [];
   const secciones = tramite.secciones_datos ?? [];
+  const asignaciones = tramite.asignaciones_oficinas ?? [];
+
+  const tabAsignacion = (
+    <div className="space-y-4">
+      {tramite.jefe_decisor ? (
+        <Card elevated>
+          <div className="p-5 flex items-center gap-4">
+            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0 text-primary text-label-md font-semibold select-none">
+              {tramite.jefe_decisor.nombre?.[0]}{tramite.jefe_decisor.apellido?.[0]}
+            </div>
+            <div>
+              <p className="text-label-sm text-on-surface-variant">Usuario Decisor Final</p>
+              <p className="text-body-md text-on-surface font-medium">
+                {tramite.jefe_decisor.nombre} {tramite.jefe_decisor.apellido}
+              </p>
+            </div>
+          </div>
+        </Card>
+      ) : (
+        <p className="text-body-md text-on-surface-variant italic">Sin decisor asignado.</p>
+      )}
+
+      {asignaciones.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {asignaciones.map((asig) => (
+            <Card key={asig.id} elevated>
+              <div className="p-4 space-y-2">
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-body-md text-on-surface font-medium">
+                    {asig.oficina?.nombre ?? '—'}
+                  </p>
+                  <AsignacionBadge estado={asig.estado} />
+                </div>
+                {asig.jefe_asignado && (
+                  <p className="text-label-sm text-on-surface-variant">
+                    Revisado por: {asig.jefe_asignado.nombre} {asig.jefe_asignado.apellido}
+                  </p>
+                )}
+              </div>
+            </Card>
+          ))}
+        </div>
+      ) : (
+        <p className="text-body-md text-on-surface-variant italic">Sin oficinas asignadas.</p>
+      )}
+    </div>
+  );
 
   const tabDatos = (
     <div className="space-y-6">
@@ -307,8 +370,9 @@ const TramiteDetalle = () => {
 
       <Tabs
         tabs={[
-          { id: 'datos',     label: 'Datos del Trámite', content: tabDatos },
-          { id: 'historial', label: `Historial (${historial.length})`, content: <HistorialTramite historial={historial} defaultOpen /> },
+          { id: 'datos',      label: 'Datos del Trámite', content: tabDatos },
+          { id: 'asignacion', label: `Oficinas (${asignaciones.length})`, content: tabAsignacion },
+          { id: 'historial',  label: `Historial (${historial.length})`, content: <HistorialTramite historial={historial} defaultOpen /> },
         ]}
       />
     </div>
