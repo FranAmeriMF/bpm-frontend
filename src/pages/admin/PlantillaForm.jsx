@@ -162,7 +162,7 @@ const PlantillaForm = () => {
                   key={v}
                   type="button"
                   onClick={() => insertVariable(v)}
-                  className="px-2 py-0.5 rounded bg-primary-fixed text-on-primary-container text-label-sm font-mono hover:bg-primary/20 transition-colors"
+                  className="px-2 py-0.5 rounded bg-primary-fixed text-on-primary-fixed text-label-sm font-mono hover:bg-primary/20 transition-colors"
                 >
                   {v}
                 </button>

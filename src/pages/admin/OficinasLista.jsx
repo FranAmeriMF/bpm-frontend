@@ -127,7 +127,7 @@ const OficinasLista = () => {
                       <span className={cn(
                         'inline-flex items-center px-2.5 py-0.5 rounded-full text-label-sm font-medium',
                         o.permite_decision_final
-                          ? 'bg-primary-fixed text-on-primary-container'
+                          ? 'bg-primary-fixed text-on-primary-fixed'
                           : 'bg-surface-container-high text-on-surface-variant',
                       )}>
                         {o.permite_decision_final ? 'Sí' : 'No'}

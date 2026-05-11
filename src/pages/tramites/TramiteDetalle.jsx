@@ -260,7 +260,7 @@ const TramiteDetalle = () => {
   );
 
   return (
-    <div className="space-y-6 max-w-4xl">
+    <div className="space-y-6 max-w">
       {/* Breadcrumb + title */}
       <div className="flex items-start justify-between gap-4">
         <div>

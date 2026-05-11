@@ -75,7 +75,7 @@ const EN_PROCESO = ['en_revision_interna', 'pendiente_asignacion', 'asignado', '
 
 // ── Sub-components ────────────────────────────────────────────────────────────
 
-const MetricCard = ({ label, value, sub, color = 'bg-primary-fixed text-on-primary-container' }) => (
+const MetricCard = ({ label, value, sub, color = 'bg-primary-fixed text-on-primary-fixed' }) => (
   <Card elevated>
     <div className="p-5">
       <p className="text-label-md text-on-surface-variant">{label}</p>
@@ -280,7 +280,7 @@ const TabActividad = ({ empresaId }) => {
         <MetricCard
           label="Total trámites"
           value={total_tramites}
-          color="bg-primary-fixed text-on-primary-container"
+          color="bg-primary-fixed text-on-primary-fixed"
         />
         <MetricCard
           label="En proceso"
@@ -425,7 +425,7 @@ const EmpresaForm = () => {
   }
 
   return (
-    <div className="space-y-4 max-w-4xl">
+    <div className="space-y-4 max-w">
       {/* Header */}
       <div>
         <Link to="/empresas" className="text-label-sm text-on-surface-variant hover:underline">

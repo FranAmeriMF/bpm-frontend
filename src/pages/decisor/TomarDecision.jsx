@@ -286,7 +286,7 @@ const TomarDecision = () => {
   );
 
   return (
-    <div className="space-y-6 max-w-4xl">
+    <div className="space-y-6 max-w">
       {/* Header */}
       <div>
         <Link to="/decision" className="text-label-sm text-on-surface-variant hover:underline">

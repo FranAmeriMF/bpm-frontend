@@ -5,7 +5,7 @@ import Spinner from './Spinner';
 
 const variants = {
   primary:
-    'bg-gradient-to-br from-primary to-primary-container text-on-primary shadow-ambient hover:shadow-ambient-lg dark:to-primary',
+    'bg-gradient-to-br from-primary to-primary-container text-on-primary shadow-ambient hover:shadow-ambient-lg dark:from-primary-container dark:text-on-primary-container',
   secondary:
     'bg-surface-container-highest text-primary hover:bg-surface-container-high',
   tertiary:

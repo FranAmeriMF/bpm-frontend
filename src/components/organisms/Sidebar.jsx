@@ -98,7 +98,7 @@ const Sidebar = ({ user, isOpen, onClose }) => {
         {/* Logo area */}
         <div className="h-16 flex items-center px-5 flex-shrink-0 border-b border-outline-variant/20">
           <span className="text-title-sm text-on-surface-variant font-medium uppercase tracking-wider">
-            Navegación
+            LOTERIA DE CORDOBA
           </span>
         </div>
 
