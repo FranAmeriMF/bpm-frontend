@@ -72,7 +72,7 @@ const OficinaForm = () => {
   }
 
   return (
-    <div className="space-y-6 max-w-xl">
+    <div className="space-y-6 max-w">
       <div>
         <Link to="/oficinas" className="text-label-sm text-on-surface-variant hover:underline">
           ← Oficinas

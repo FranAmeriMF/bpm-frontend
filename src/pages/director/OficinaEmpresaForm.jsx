@@ -121,7 +121,7 @@ const OficinaEmpresaForm = () => {
   }
 
   return (
-    <div className="space-y-6 max-w-xl">
+    <div className="space-y-6 max-w">
       <div>
         <Link to="/mis-oficinas" className="text-label-sm text-on-surface-variant hover:underline">
           ← Oficinas

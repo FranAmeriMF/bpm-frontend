@@ -101,7 +101,7 @@ const TramiteEditar = () => {
   }
 
   return (
-    <div className="space-y-6 max-w-3xl">
+    <div className="space-y-6 max-w">
       {/* Header */}
       <div>
         <Link to={`/tramites/${id}`} className="text-label-sm text-on-surface-variant hover:underline">

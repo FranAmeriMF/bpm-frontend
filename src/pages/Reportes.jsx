@@ -361,7 +361,7 @@ const Reportes = () => {
   }
 
   return (
-    <div className="space-y-10 max-w-5xl">
+    <div className="space-y-10 max-w">
       <div>
         <h1 className="text-display-sm text-primary font-semibold">Reportes</h1>
         <p className="text-body-md text-on-surface-variant mt-1">

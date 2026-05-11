@@ -86,7 +86,7 @@ const PlantillaForm = () => {
   }
 
   return (
-    <div className="space-y-6 max-w-3xl">
+    <div className="space-y-6 max-w">
       <div>
         <Link to="/plantillas" className="text-label-sm text-on-surface-variant hover:underline">
           ← Plantillas de Mensaje

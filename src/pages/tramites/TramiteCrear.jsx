@@ -54,7 +54,7 @@ const TramiteCrear = () => {
   const tipoOptions = (tipos?.data ?? []).map((t) => ({ value: t.id, label: t.nombre }));
 
   return (
-    <div className="space-y-6 max-w-3xl">
+    <div className="space-y-6 max-w">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>

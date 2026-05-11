@@ -143,7 +143,7 @@ const Notificaciones = () => {
   const tiposEnUso = [...new Set(lista.map((n) => n.tipo))];
 
   return (
-    <div className="space-y-6 max-w-3xl">
+    <div className="space-y-6 max-w">
       {/* Header */}
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>

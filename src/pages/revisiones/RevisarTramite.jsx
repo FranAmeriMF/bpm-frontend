@@ -219,7 +219,7 @@ const RevisarTramite = () => {
 
   if (asignacion.estado === 'pendiente') {
     return (
-      <div className="space-y-6 max-w-3xl">
+      <div className="space-y-6 max-w">
         <div>
           <Link to="/revisiones" className="text-label-sm text-on-surface-variant hover:underline">
             ← Mis Revisiones
@@ -305,7 +305,7 @@ const RevisarTramite = () => {
   );
 
   return (
-    <div className="space-y-6 max-w-3xl">
+    <div className="space-y-6 max-w">
       <div>
         <Link to="/revisiones" className="text-label-sm text-on-surface-variant hover:underline">
           ← Mis Revisiones

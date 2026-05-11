@@ -543,7 +543,7 @@ const TipoTramiteBuilder = () => {
             </div>
             <p className="text-label-sm text-on-surface-variant font-mono mt-0.5">{tipo.codigo}</p>
             {tipo.descripcion && (
-              <p className="text-body-sm text-on-surface-variant mt-1 max-w-xl">{tipo.descripcion}</p>
+              <p className="text-body-sm text-on-surface-variant mt-1 max-w">{tipo.descripcion}</p>
             )}
           </div>
           <div className="flex gap-2 flex-shrink-0 flex-wrap">
