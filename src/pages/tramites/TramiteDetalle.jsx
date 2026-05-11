@@ -130,7 +130,7 @@ const TramiteDetalle = () => {
   const { user } = useAuth();
   const [rechazarOpen, setRechazarOpen] = useState(false);
 
-  const { data: tramite, isLoading } = useGetTramiteQuery(id);
+  const { data: tramite, isLoading, isError } = useGetTramiteQuery(id);
   const [enviarDirector, { isLoading: enviando }] = useEnviarDirectorMutation();
   const [aprobarDirector, { isLoading: aprobando }] = useAprobarDirectorMutation();
   const [rechazarDirector, { isLoading: rechazando }] = useRechazarDirectorMutation();
@@ -144,7 +144,7 @@ const TramiteDetalle = () => {
     );
   }
 
-  if (!tramite) {
+  if (!tramite || isError) {
     return <EmptyState title="Trámite no encontrado" description="El trámite no existe o no tenés acceso." />;
   }
 

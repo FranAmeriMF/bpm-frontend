@@ -41,10 +41,10 @@ const TIPOS_CAMPO = [
 
 const TIPO_CAMPO_LABEL = Object.fromEntries(TIPOS_CAMPO.map(t => [t.value, t.label]));
 
-const TIPOS_CON_OPCIONES  = ['select', 'radio', 'checkbox_group'];
-const TIPOS_CON_LONGITUD  = ['text', 'textarea'];
-const TIPOS_CON_RANGO     = ['number'];
-const TIPOS_CON_ARCHIVO   = ['file'];
+const TIPOS_CON_OPCIONES    = ['select', 'radio', 'checkbox_group'];
+const TIPOS_CON_LONGITUD    = ['text', 'textarea'];
+const TIPOS_CON_RANGO       = ['number'];
+const TIPOS_CON_ARCHIVO     = ['file'];
 const TIPOS_CON_PLACEHOLDER = ['text', 'textarea', 'number'];
 
 // ── Yup schemas ──────────────────────────────────────────────────────────────
@@ -248,8 +248,6 @@ const CampoModal = ({ isOpen, initial, onClose, onSave, isSaving }) => {
   const conArchivo     = TIPOS_CON_ARCHIVO.includes(tipoActual);
   const conPlaceholder = TIPOS_CON_PLACEHOLDER.includes(tipoActual);
 
-  const onSubmit = (data) => onSave(formToCampoPayload(data));
-
   return (
     <ModalOverlay
       isOpen={isOpen}
@@ -257,7 +255,7 @@ const CampoModal = ({ isOpen, initial, onClose, onSave, isSaving }) => {
       title={initial ? 'Editar Campo' : 'Nuevo Campo'}
       maxWidth="max-w-2xl"
     >
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={handleSubmit((data) => onSave(formToCampoPayload(data)))} className="space-y-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <Input
@@ -387,6 +385,183 @@ const ESTADO_STYLES = {
   inactivo: 'bg-error-container text-on-error-container',
 };
 
+// ── Asignación card ───────────────────────────────────────────────────────────
+
+const AsignacionCard = ({ modoAsig, setModoAsig, oficinas, selectedOficinas, toggleOficina, onSave, isSaving }) => (
+  <Card elevated>
+    <div className="p-5 space-y-4">
+      <h2 className="text-title-md text-on-surface font-medium">Asignación de trámites</h2>
+      <div className="flex flex-wrap gap-4 items-end">
+        <div>
+          <label className="block text-label-md text-on-surface-variant mb-1.5 font-medium">
+            Modo de asignación
+          </label>
+          <select
+            value={modoAsig}
+            onChange={(e) => setModoAsig(e.target.value)}
+            className="h-10 px-3 rounded border border-outline-variant bg-surface-container-low text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 w-56"
+          >
+            <option value="manual">Manual (por moderador)</option>
+            <option value="automatico">Automático (por oficina)</option>
+          </select>
+        </div>
+        <Button size="sm" onClick={onSave} isLoading={isSaving}>
+          Guardar
+        </Button>
+      </div>
+      {modoAsig === 'automatico' && (
+        <div>
+          <p className="text-label-md text-on-surface-variant mb-2 font-medium">
+            Oficinas que reciben este trámite automáticamente
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+            {oficinas.map((o) => (
+              <label key={o.id} className="flex items-center gap-2 cursor-pointer text-body-sm">
+                <input
+                  type="checkbox"
+                  checked={selectedOficinas.includes(o.id)}
+                  onChange={() => toggleOficina(o.id)}
+                  className="rounded text-primary"
+                />
+                <span className="text-on-surface">{o.nombre}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  </Card>
+);
+
+// ── Campo row ─────────────────────────────────────────────────────────────────
+
+const CampoRow = ({ campo, campoIdx, totalCampos, seccionId, isBorrador, moveCampo, setCampoModal }) => (
+  <div className="px-5 py-2.5 flex items-center justify-between gap-3 hover:bg-surface-container-low transition-colors">
+    <div className="flex items-center gap-3 min-w-0 flex-1">
+      <span className="text-label-sm text-on-surface-variant w-5 flex-shrink-0 text-right">
+        {campoIdx + 1}.
+      </span>
+      <span className="inline-flex px-2 py-0.5 rounded bg-surface-container text-on-surface-variant text-label-sm font-mono flex-shrink-0">
+        {TIPO_CAMPO_LABEL[campo.tipo] ?? campo.tipo}
+      </span>
+      <div className="min-w-0">
+        <span className="text-body-sm text-on-surface font-medium">{campo.etiqueta}</span>
+        <span className="text-label-sm text-on-surface-variant font-mono ml-2 hidden sm:inline">
+          {campo.nombre}
+        </span>
+        {campo.obligatorio && (
+          <span className="ml-1 text-error text-label-sm font-bold" title="Obligatorio">*</span>
+        )}
+      </div>
+    </div>
+    {isBorrador && (
+      <div className="flex items-center gap-1 flex-shrink-0">
+        <button
+          disabled={campoIdx === 0}
+          onClick={() => moveCampo(campo, seccionId, 'up')}
+          className="p-1 rounded hover:bg-surface-container disabled:opacity-30 transition-colors"
+        >
+          <ChevronUpIcon className="h-3.5 w-3.5 text-on-surface-variant" />
+        </button>
+        <button
+          disabled={campoIdx === totalCampos - 1}
+          onClick={() => moveCampo(campo, seccionId, 'down')}
+          className="p-1 rounded hover:bg-surface-container disabled:opacity-30 transition-colors"
+        >
+          <ChevronDownIcon className="h-3.5 w-3.5 text-on-surface-variant" />
+        </button>
+        <button
+          onClick={() => setCampoModal({ seccionId, campo })}
+          className="p-1 rounded hover:bg-surface-container transition-colors"
+        >
+          <PencilIcon className="h-3.5 w-3.5 text-on-surface-variant" />
+        </button>
+      </div>
+    )}
+  </div>
+);
+
+// ── Sección card ──────────────────────────────────────────────────────────────
+
+const SeccionCard = ({ sec, secIdx, totalSecciones, isBorrador, moveSeccion, setSeccionModal, setCampoModal, moveCampo }) => {
+  const campos = sec.campos ?? [];
+  return (
+    <Card elevated>
+      <div className="px-5 py-3 flex items-start justify-between gap-3 bg-surface-container border-b border-outline-variant/20">
+        <div className="flex-1 min-w-0">
+          <p className="text-title-sm font-medium text-on-surface">
+            <span className="text-on-surface-variant text-label-sm mr-2">{secIdx + 1}.</span>
+            {sec.titulo}
+          </p>
+          {sec.descripcion && (
+            <p className="text-label-sm text-on-surface-variant mt-0.5">{sec.descripcion}</p>
+          )}
+        </div>
+        {isBorrador && (
+          <div className="flex items-center gap-1 flex-shrink-0">
+            <button
+              disabled={secIdx === 0}
+              onClick={() => moveSeccion(sec, 'up')}
+              className="p-1.5 rounded hover:bg-surface-container-low disabled:opacity-30 transition-colors"
+              title="Subir"
+            >
+              <ChevronUpIcon className="h-4 w-4 text-on-surface-variant" />
+            </button>
+            <button
+              disabled={secIdx === totalSecciones - 1}
+              onClick={() => moveSeccion(sec, 'down')}
+              className="p-1.5 rounded hover:bg-surface-container-low disabled:opacity-30 transition-colors"
+              title="Bajar"
+            >
+              <ChevronDownIcon className="h-4 w-4 text-on-surface-variant" />
+            </button>
+            <button
+              onClick={() => setSeccionModal({ seccion: sec })}
+              className="p-1.5 rounded hover:bg-surface-container-low transition-colors"
+              title="Editar"
+            >
+              <PencilIcon className="h-4 w-4 text-on-surface-variant" />
+            </button>
+          </div>
+        )}
+      </div>
+
+      <div className="divide-y divide-outline-variant/10">
+        {campos.length === 0 ? (
+          <p className="px-5 py-3 text-label-sm text-on-surface-variant italic">
+            Sin campos en esta sección.
+          </p>
+        ) : (
+          campos.map((campo, campoIdx) => (
+            <CampoRow
+              key={campo.id}
+              campo={campo}
+              campoIdx={campoIdx}
+              totalCampos={campos.length}
+              seccionId={sec.id}
+              isBorrador={isBorrador}
+              moveCampo={moveCampo}
+              setCampoModal={setCampoModal}
+            />
+          ))
+        )}
+      </div>
+
+      {isBorrador && (
+        <div className="px-5 py-2.5 border-t border-outline-variant/10">
+          <button
+            onClick={() => setCampoModal({ seccionId: sec.id })}
+            className="flex items-center gap-1.5 text-label-sm text-primary hover:text-primary/70 transition-colors"
+          >
+            <PlusIcon className="h-4 w-4" />
+            Agregar campo
+          </button>
+        </div>
+      )}
+    </Card>
+  );
+};
+
 // ── Main component ────────────────────────────────────────────────────────────
 
 const TipoTramiteBuilder = () => {
@@ -397,26 +572,22 @@ const TipoTramiteBuilder = () => {
   const { data: oficinasData }    = useGetOficinasQuery({ limit: 100, estado: 'activa' });
   const oficinas = oficinasData?.data ?? [];
 
-  const [updateTipo,   { isLoading: savingMeta }]   = useUpdateTipoTramiteMutation();
-  const [activarTipo,  { isLoading: activando }]    = useActivarTipoTramiteMutation();
-  const [nuevaVersion, { isLoading: versionando }]  = useNuevaVersionTipoTramiteMutation();
-  const [setAsignacion,{ isLoading: savingAsig }]   = useSetModoAsignacionMutation();
-
-  const [createSeccion, { isLoading: creandoSec }]    = useCreateSeccionMutation();
+  const [updateTipo,    { isLoading: savingMeta }]      = useUpdateTipoTramiteMutation();
+  const [activarTipo,   { isLoading: activando }]       = useActivarTipoTramiteMutation();
+  const [nuevaVersion,  { isLoading: versionando }]     = useNuevaVersionTipoTramiteMutation();
+  const [setAsignacion, { isLoading: savingAsig }]      = useSetModoAsignacionMutation();
+  const [createSeccion, { isLoading: creandoSec }]      = useCreateSeccionMutation();
   const [updateSeccion, { isLoading: actualizandoSec }] = useUpdateSeccionMutation();
-  const [reorderSecciones] = useReorderSeccionesMutation();
+  const [reorderSecciones]                              = useReorderSeccionesMutation();
+  const [createCampo,   { isLoading: creandoCampo }]    = useCreateCampoMutation();
+  const [updateCampo,   { isLoading: actualizandoCampo }] = useUpdateCampoMutation();
+  const [reorderCampos]                                 = useReorderCamposMutation();
 
-  const [createCampo, { isLoading: creandoCampo }]     = useCreateCampoMutation();
-  const [updateCampo, { isLoading: actualizandoCampo }] = useUpdateCampoMutation();
-  const [reorderCampos] = useReorderCamposMutation();
+  const [metaModal,    setMetaModal]    = useState(false);
+  const [seccionModal, setSeccionModal] = useState(null);
+  const [campoModal,   setCampoModal]   = useState(null);
 
-  // ── Modal state ──────────────────────────────────────────────────────────
-  const [metaModal,        setMetaModal]        = useState(false);
-  const [seccionModal,     setSeccionModal]     = useState(null); // null | { seccion? }
-  const [campoModal,       setCampoModal]       = useState(null); // null | { seccionId, campo? }
-
-  // ── Asignación local state ───────────────────────────────────────────────
-  const [modoAsig, setModoAsig]           = useState('manual');
+  const [modoAsig,        setModoAsig]        = useState('manual');
   const [selectedOficinas, setSelectedOficinas] = useState([]);
 
   useEffect(() => {
@@ -428,10 +599,9 @@ const TipoTramiteBuilder = () => {
 
   const toggleOficina = (ofId) =>
     setSelectedOficinas(prev =>
-      prev.includes(ofId) ? prev.filter(x => x !== ofId) : [...prev, ofId]
+      prev.includes(ofId) ? prev.filter(x => x !== ofId) : [...prev, ofId],
     );
 
-  // ── Helpers ──────────────────────────────────────────────────────────────
   const isBorrador = tipo?.estado === 'borrador';
 
   const moveSeccion = async (seccion, dir) => {
@@ -446,9 +616,9 @@ const TipoTramiteBuilder = () => {
   };
 
   const moveCampo = async (campo, seccionId, dir) => {
-    const sec   = tipo?.secciones?.find(s => s.id === seccionId);
-    const list  = sec?.campos ?? [];
-    const idx   = list.findIndex(c => c.id === campo.id);
+    const sec  = tipo?.secciones?.find(s => s.id === seccionId);
+    const list = sec?.campos ?? [];
+    const idx  = list.findIndex(c => c.id === campo.id);
     if ((dir === 'up' && idx === 0) || (dir === 'down' && idx === list.length - 1)) return;
     const ids  = list.map(c => c.id);
     const swap = dir === 'up' ? idx - 1 : idx + 1;
@@ -457,7 +627,6 @@ const TipoTramiteBuilder = () => {
     catch { toast.error('Error al reordenar campos'); }
   };
 
-  // ── Handlers ─────────────────────────────────────────────────────────────
   const handleSaveMeta = async (data) => {
     try {
       await updateTipo({ id, ...data }).unwrap();
@@ -518,7 +687,6 @@ const TipoTramiteBuilder = () => {
     } catch (err) { toast.error(err.data?.message ?? 'Error al guardar campo'); }
   };
 
-  // ── Render ────────────────────────────────────────────────────────────────
   if (isLoading) return <div className="flex justify-center py-24"><Spinner size="lg" /></div>;
   if (!tipo)     return <div className="py-16 text-center text-body-md text-on-surface-variant">Tipo no encontrado.</div>;
 
@@ -567,50 +735,15 @@ const TipoTramiteBuilder = () => {
       </div>
 
       {/* ── Asignación ── */}
-      <Card elevated>
-        <div className="p-5 space-y-4">
-          <h2 className="text-title-md text-on-surface font-medium">Asignación de trámites</h2>
-          <div className="flex flex-wrap gap-4 items-end">
-            <div>
-              <label className="block text-label-md text-on-surface-variant mb-1.5 font-medium">
-                Modo de asignación
-              </label>
-              <select
-                value={modoAsig}
-                onChange={(e) => setModoAsig(e.target.value)}
-                className="h-10 px-3 rounded border border-outline-variant bg-surface-container-low text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 w-56"
-              >
-                <option value="manual">Manual (por moderador)</option>
-                <option value="automatico">Automático (por oficina)</option>
-              </select>
-            </div>
-            <Button size="sm" onClick={handleSaveAsignacion} isLoading={savingAsig}>
-              Guardar
-            </Button>
-          </div>
-
-          {modoAsig === 'automatico' && (
-            <div>
-              <p className="text-label-md text-on-surface-variant mb-2 font-medium">
-                Oficinas que reciben este trámite automáticamente
-              </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
-                {oficinas.map((o) => (
-                  <label key={o.id} className="flex items-center gap-2 cursor-pointer text-body-sm">
-                    <input
-                      type="checkbox"
-                      checked={selectedOficinas.includes(o.id)}
-                      onChange={() => toggleOficina(o.id)}
-                      className="rounded text-primary"
-                    />
-                    <span className="text-on-surface">{o.nombre}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      </Card>
+      <AsignacionCard
+        modoAsig={modoAsig}
+        setModoAsig={setModoAsig}
+        oficinas={oficinas}
+        selectedOficinas={selectedOficinas}
+        toggleOficina={toggleOficina}
+        onSave={handleSaveAsignacion}
+        isSaving={savingAsig}
+      />
 
       {/* ── Secciones ── */}
       <div>
@@ -639,123 +772,19 @@ const TipoTramiteBuilder = () => {
           </div>
         ) : (
           <div className="space-y-4">
-            {secciones.map((sec, secIdx) => {
-              const campos = sec.campos ?? [];
-              return (
-                <Card key={sec.id} elevated>
-                  {/* Sección header */}
-                  <div className="px-5 py-3 flex items-start justify-between gap-3 bg-surface-container border-b border-outline-variant/20">
-                    <div className="flex-1 min-w-0">
-                      <p className="text-title-sm font-medium text-on-surface">
-                        <span className="text-on-surface-variant text-label-sm mr-2">{secIdx + 1}.</span>
-                        {sec.titulo}
-                      </p>
-                      {sec.descripcion && (
-                        <p className="text-label-sm text-on-surface-variant mt-0.5">{sec.descripcion}</p>
-                      )}
-                    </div>
-                    {isBorrador && (
-                      <div className="flex items-center gap-1 flex-shrink-0">
-                        <button
-                          disabled={secIdx === 0}
-                          onClick={() => moveSeccion(sec, 'up')}
-                          className="p-1.5 rounded hover:bg-surface-container-low disabled:opacity-30 transition-colors"
-                          title="Subir"
-                        >
-                          <ChevronUpIcon className="h-4 w-4 text-on-surface-variant" />
-                        </button>
-                        <button
-                          disabled={secIdx === secciones.length - 1}
-                          onClick={() => moveSeccion(sec, 'down')}
-                          className="p-1.5 rounded hover:bg-surface-container-low disabled:opacity-30 transition-colors"
-                          title="Bajar"
-                        >
-                          <ChevronDownIcon className="h-4 w-4 text-on-surface-variant" />
-                        </button>
-                        <button
-                          onClick={() => setSeccionModal({ seccion: sec })}
-                          className="p-1.5 rounded hover:bg-surface-container-low transition-colors"
-                          title="Editar"
-                        >
-                          <PencilIcon className="h-4 w-4 text-on-surface-variant" />
-                        </button>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Campos */}
-                  <div className="divide-y divide-outline-variant/10">
-                    {campos.length === 0 ? (
-                      <p className="px-5 py-3 text-label-sm text-on-surface-variant italic">
-                        Sin campos en esta sección.
-                      </p>
-                    ) : (
-                      campos.map((campo, campoIdx) => (
-                        <div
-                          key={campo.id}
-                          className="px-5 py-2.5 flex items-center justify-between gap-3 hover:bg-surface-container-low transition-colors"
-                        >
-                          <div className="flex items-center gap-3 min-w-0 flex-1">
-                            <span className="text-label-sm text-on-surface-variant w-5 flex-shrink-0 text-right">
-                              {campoIdx + 1}.
-                            </span>
-                            <span className="inline-flex px-2 py-0.5 rounded bg-surface-container text-on-surface-variant text-label-sm font-mono flex-shrink-0">
-                              {TIPO_CAMPO_LABEL[campo.tipo] ?? campo.tipo}
-                            </span>
-                            <div className="min-w-0">
-                              <span className="text-body-sm text-on-surface font-medium">{campo.etiqueta}</span>
-                              <span className="text-label-sm text-on-surface-variant font-mono ml-2 hidden sm:inline">
-                                {campo.nombre}
-                              </span>
-                              {campo.obligatorio && (
-                                <span className="ml-1 text-error text-label-sm font-bold" title="Obligatorio">*</span>
-                              )}
-                            </div>
-                          </div>
-                          {isBorrador && (
-                            <div className="flex items-center gap-1 flex-shrink-0">
-                              <button
-                                disabled={campoIdx === 0}
-                                onClick={() => moveCampo(campo, sec.id, 'up')}
-                                className="p-1 rounded hover:bg-surface-container disabled:opacity-30 transition-colors"
-                              >
-                                <ChevronUpIcon className="h-3.5 w-3.5 text-on-surface-variant" />
-                              </button>
-                              <button
-                                disabled={campoIdx === campos.length - 1}
-                                onClick={() => moveCampo(campo, sec.id, 'down')}
-                                className="p-1 rounded hover:bg-surface-container disabled:opacity-30 transition-colors"
-                              >
-                                <ChevronDownIcon className="h-3.5 w-3.5 text-on-surface-variant" />
-                              </button>
-                              <button
-                                onClick={() => setCampoModal({ seccionId: sec.id, campo })}
-                                className="p-1 rounded hover:bg-surface-container transition-colors"
-                              >
-                                <PencilIcon className="h-3.5 w-3.5 text-on-surface-variant" />
-                              </button>
-                            </div>
-                          )}
-                        </div>
-                      ))
-                    )}
-                  </div>
-
-                  {/* Add campo */}
-                  {isBorrador && (
-                    <div className="px-5 py-2.5 border-t border-outline-variant/10">
-                      <button
-                        onClick={() => setCampoModal({ seccionId: sec.id })}
-                        className="flex items-center gap-1.5 text-label-sm text-primary hover:text-primary/70 transition-colors"
-                      >
-                        <PlusIcon className="h-4 w-4" />
-                        Agregar campo
-                      </button>
-                    </div>
-                  )}
-                </Card>
-              );
-            })}
+            {secciones.map((sec, secIdx) => (
+              <SeccionCard
+                key={sec.id}
+                sec={sec}
+                secIdx={secIdx}
+                totalSecciones={secciones.length}
+                isBorrador={isBorrador}
+                moveSeccion={moveSeccion}
+                setSeccionModal={setSeccionModal}
+                setCampoModal={setCampoModal}
+                moveCampo={moveCampo}
+              />
+            ))}
           </div>
         )}
       </div>

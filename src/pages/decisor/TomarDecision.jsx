@@ -4,7 +4,7 @@ import { toast } from 'react-toastify';
 import { useGetTramiteQuery, useDecisionFinalMutation } from '@api/tramitesApi';
 import { useGetPlantillasQuery } from '@api/plantillasApi';
 import { Button, Card, Spinner, StatusPill } from '@components/atoms';
-import { Tabs } from '@components/molecules';
+import { EmptyState, Tabs } from '@components/molecules';
 import { HistorialTramite } from '@components/organisms';
 import { cn, formatDate } from '@utils/helpers';
 
@@ -201,7 +201,7 @@ const TomarDecision = () => {
   const { tramite_id } = useParams();
   const navigate = useNavigate();
 
-  const { data: tramite, isLoading } = useGetTramiteQuery(tramite_id);
+  const { data: tramite, isLoading, isError } = useGetTramiteQuery(tramite_id);
   const [decisionFinal, { isLoading: submitting }] = useDecisionFinalMutation();
 
   const [decision, setDecision] = useState(null);
@@ -219,8 +219,14 @@ const TomarDecision = () => {
     return <div className="flex justify-center py-24"><Spinner size="lg" /></div>;
   }
 
-  if (!tramite) {
-    return <p className="text-body-md text-on-surface-variant italic">Trámite no encontrado.</p>;
+  if (!tramite || isError) {
+    return (
+      <EmptyState
+        title="Trámite no encontrado"
+        description="El trámite no existe o no tenés acceso."
+        action={{ label: 'Volver a Bandeja Final', onClick: () => navigate('/decision') }}
+      />
+    );
   }
 
   const secciones = tramite.secciones_datos ?? [];

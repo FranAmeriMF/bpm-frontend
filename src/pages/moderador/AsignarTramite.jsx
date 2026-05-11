@@ -5,13 +5,14 @@ import { useGetTramiteQuery, useAsignarTramiteMutation } from '@api/tramitesApi'
 import { useGetOficinasQuery } from '@api/oficinasApi';
 import { useGetUsuariosQuery } from '@api/usuariosApi';
 import { Button, Card, Select, Spinner } from '@components/atoms';
+import { EmptyState } from '@components/molecules';
 
 // ── Main page ──────────────────────────────────────────────────────────────────
 const AsignarTramite = () => {
   const { tramite_id } = useParams();
   const navigate = useNavigate();
 
-  const { data: tramite, isLoading: tramiteLoading } = useGetTramiteQuery(tramite_id);
+  const { data: tramite, isLoading: tramiteLoading, isError } = useGetTramiteQuery(tramite_id);
   const { data: oficinas } = useGetOficinasQuery();
   const { data: todosLosJefes } = useGetUsuariosQuery({ rol: 'jefe_oficina' });
 
@@ -59,6 +60,16 @@ const AsignarTramite = () => {
       <div className="flex justify-center py-24">
         <Spinner size="lg" />
       </div>
+    );
+  }
+
+  if (isError || !tramite) {
+    return (
+      <EmptyState
+        title="Trámite no encontrado"
+        description="El trámite no existe o no tenés acceso."
+        action={{ label: 'Volver a Asignación', onClick: () => navigate('/asignacion') }}
+      />
     );
   }
 

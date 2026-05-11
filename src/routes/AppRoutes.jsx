@@ -48,6 +48,7 @@ const UsuarioExternoForm    = lazy(() => import('@pages/admin/UsuarioExternoForm
 const Perfil                = lazy(() => import('@pages/Perfil'));
 const Notificaciones        = lazy(() => import('@pages/Notificaciones'));
 const Reportes              = lazy(() => import('@pages/Reportes'));
+const NotFound              = lazy(() => import('@pages/NotFound'));
 
 // ── Full-screen loader for Suspense fallback ──────────────────────────────────
 const PageLoader = () => (
@@ -162,7 +163,7 @@ const AppRoutes = () => (
       </Route>
 
       <Route path="/"  element={<Navigate to="/dashboard" replace />} />
-      <Route path="*"  element={<Navigate to="/dashboard" replace />} />
+      <Route path="*"  element={<NotFound />} />
     </Routes>
   </Suspense>
 );

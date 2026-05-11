@@ -4,7 +4,8 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { useGetTramiteQuery, useUpdateTramiteMutation, useReenviarTramiteMutation } from '@api/tramitesApi';
 import { useGetTipoTramiteQuery } from '@api/tiposTramiteApi';
-import { Button, Card, Spinner } from '@components/atoms';
+import { Button, Spinner } from '@components/atoms';
+import { EmptyState } from '@components/molecules';
 import { TramiteFormSections } from '@components/organisms';
 
 // Transforms flat campos map → secciones array
@@ -29,7 +30,7 @@ const TramiteEditar = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const { data: tramite, isLoading: tramiteLoading } = useGetTramiteQuery(id);
+  const { data: tramite, isLoading: tramiteLoading, isError } = useGetTramiteQuery(id);
   const { data: tipoTramite, isLoading: tipoLoading } = useGetTipoTramiteQuery(
     tramite?.tipo_tramite_id,
     { skip: !tramite?.tipo_tramite_id },
@@ -92,11 +93,13 @@ const TramiteEditar = () => {
     );
   }
 
-  if (!tramite || !tipoTramite) {
+  if (isError || !tramite || !tipoTramite) {
     return (
-      <Card elevated>
-        <div className="p-8 text-center text-on-surface-variant">Trámite no encontrado.</div>
-      </Card>
+      <EmptyState
+        title="Trámite no encontrado"
+        description="El trámite no existe o no tenés acceso."
+        action={{ label: 'Volver a Trámites', onClick: () => navigate('/tramites') }}
+      />
     );
   }
 

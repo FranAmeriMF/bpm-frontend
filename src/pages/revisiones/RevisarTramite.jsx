@@ -4,7 +4,7 @@ import { useGetTramiteQuery, useFinalizarRevisionMutation, useIniciarRevisionMut
 import { useGetProgresoQuery, useEvaluarSeccionMutation } from '@api/evaluacionesApi';
 import { useAuth } from '@hooks/useAuth';
 import { Button, Card, Spinner } from '@components/atoms';
-import { Tabs } from '@components/molecules';
+import { EmptyState, Tabs } from '@components/molecules';
 import { EvaluacionSeccionForm, HistorialTramite } from '@components/organisms';
 import { cn, formatDate } from '@utils/helpers';
 
@@ -126,7 +126,7 @@ const RevisarTramite = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  const { data: tramite, isLoading: tramiteLoading } = useGetTramiteQuery(tramite_id);
+  const { data: tramite, isLoading: tramiteLoading, isError } = useGetTramiteQuery(tramite_id);
   const [iniciarRevision, { isLoading: iniciando }] = useIniciarRevisionMutation();
   const [evaluarSeccion] = useEvaluarSeccionMutation();
   const [finalizarRevision, { isLoading: finalizando }] = useFinalizarRevisionMutation();
@@ -178,8 +178,14 @@ const RevisarTramite = () => {
     return <div className="flex justify-center py-24"><Spinner size="lg" /></div>;
   }
 
-  if (!tramite) {
-    return <p className="text-body-md text-on-surface-variant italic">Trámite no encontrado.</p>;
+  if (!tramite || isError) {
+    return (
+      <EmptyState
+        title="Trámite no encontrado"
+        description="El trámite no existe o no tenés acceso."
+        action={{ label: 'Volver a Mis Revisiones', onClick: () => navigate('/revisiones') }}
+      />
+    );
   }
 
   if (!user?.oficina_id) {
